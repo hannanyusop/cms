@@ -5,19 +5,27 @@
 
 using namespace std;
 
+
 void logo()
 {
-    cout << "==============================================================\n";
+    cout << "\n==============================================================\n";
     cout << "||              UNIVERSITI TEKNOLOGI MALAYSIA               ||\n";
     cout << "||                      SKUDAI,JOHOR                        ||\n";
     cout << "||          UTM SUBJECT REGISTRATION SYSTEM                 ||\n";
     cout << "==============================================================\n";
 }
+
+void clearScreen()
+{
+	system("CLS");
+    logo();
+}
+
 bool login()
 {
     string username,password;
     
-	cout << "==============================================================\n";
+	cout << "\n==============================================================\n";
     cout<< "\n\t\tPlease Login\n\n";
     cout<< "\tStudent No:";
     cin >> username;
@@ -85,8 +93,58 @@ int displayMenu()
 	return num;
 	
 }
+
+void searchSubject()
+{
+	char again = 'y';
+    		
+	do{
+		
+		clearScreen();
+		cout << "       ---------------------------------------------------    \n";
+		cout << "       |             SEARCH SUBJECT ID                   |    \n";
+		cout << "       ---------------------------------------------------    \n";
+		
+	string code; 
+	cout << "Insert Subject ID:";
+	cin >> code;
+	
+	string parameter = "["+code+"]";
+	string line;
+	bool result = false;
+	
+	  ifstream subject ("data/subjects.txt");
+	  subject.is_open();
+	    size_t pos;
+		while(subject.good())
+		{
+		      getline(subject,line);
+		      pos=line.find(parameter); 
+		      if(pos!=string::npos) 
+		        {
+		            cout << "Found:"+line;
+		            result = true;
+		            break;
+		        }
+		}
+		  
+		if(result == false){
+			cout << "\n\nSorry! No Code found for:"+code+"\n";
+		}
+		
+	    subject.close();	  
+	  
+	  	cout << "\n\nDo you want to search another code?\nclick Y for yes or enter any key to stop\n";
+	  	cin >> again;
+	  	
+	  
+	  
+	}while(again == 'y' || again == 'Y');
+	
+}
+
 int main() {
-   logo();
+   clearScreen();
    bool loginResult;
    int attempt = 0;
    do{
@@ -106,10 +164,27 @@ int main() {
    }while(loginResult == 0);
 
     //logged in
-    system("CLS");
-    logo();
+    clearScreen();
     int selected = displayMenu();
-    cout << selected;
+    
+    clearScreen();
+    switch(selected){
+    	case 1 :
+    		break;
+    		
+    	case 2 :
+    		break;
+    		
+    	case 3 :
+    		break;
+    	case 4 :
+    		break;
+    	case 5 :
+    		break;
+    	case 6 :
+    		searchSubject();
+    		break;
+	}
     
 
    return 0;
