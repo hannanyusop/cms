@@ -10,6 +10,7 @@ using namespace std;
 //declare gloabal var
 int max_subject = 100;
 string subjectFile = "data/subjects.data";
+static string username = "null";
 
 typedef struct subject
 {
@@ -20,6 +21,16 @@ typedef struct subject
     int capacity = 0;
 }subject_t;
 
+
+typedef struct students
+{
+	char matric_id[20] = "null";
+	char password[100];
+	char name[100];
+	int semester = 0;
+	int credit_hour = 0;
+}student_t;
+
 void logo()
 {
     cout << "\n==============================================================\n";
@@ -27,6 +38,10 @@ void logo()
     cout << "||                      SKUDAI,JOHOR                        ||\n";
     cout << "||          UTM SUBJECT REGISTRATION SYSTEM                 ||\n";
     cout << "==============================================================\n";
+    
+    if(username != "null"){
+		cout << endl << "welcome, " << username << "!" << endl<< endl;	
+	}
 }
 
 void clearScreen()
@@ -48,7 +63,7 @@ bool backMainMessage()
 	return false;
 }
 
-bool login()
+string login()
 {
     string username,password;
     
@@ -82,8 +97,11 @@ bool login()
 	  }else cout << "Unable to open file";
 	
 	
+	if(auth == false){
+		return "false";
+	}
 	   
-	return auth;
+	return username;
 
 }
 
@@ -99,6 +117,8 @@ int displayMenu()
 	cout << "| 4 => View Reqistered Subject                             |\n";
 	cout << "| 5 => View All Subject                                    |\n";
 	cout << "| 6 => Search Subject ID                                   |\n";
+	cout << "| 7 => Add student(Admin)                                  |\n";
+	cout << "| 8 => View Student(Admin)                                 |\n";
 	cout << "|==========================================================|\n";
 	cout << "| Q => Quit                                                |\n";
 	cout << "|==========================================================|\n";
@@ -108,7 +128,7 @@ int displayMenu()
 		cout<< "Select Menu(1-6):";
 		cin >> num;
 		
-		if(num > 0 && num < 7){
+		if(num > 0 && num < 9){
 			
 			result = true;
 		}else{
@@ -209,8 +229,7 @@ bool addSubject()
 }
 
 bool viewAllSubject()
-{
-	
+{	
 	clearScreen();
 	cout << "       ---------------------------------------------------    \n";
 	cout << "       |                 VIEW ALL SUBJECT                |    \n";
@@ -250,9 +269,108 @@ bool viewAllSubject()
 		
 }
 
-int main() {
+
+//ADMIN FUNCTION START
+
+bool adminAddStudent()
+{
+	clearScreen();
+	cout << "       ---------------------------------------------------    \n";
+	cout << "       |                    ADD STUDENT                  |    \n";
+	cout << "       ---------------------------------------------------    \n";
+	
+	char name[100],matric_id[20];
+	int semester;
+	
+	cout << endl << "Name:"; cin >> name;
+	
+	cout << endl << "Matric No:"; cin >> matric_id;
+	
+	cout << endl << "Semeseter:"; cin >> semester;
+	
+	ifstream input_file("new_students.data", ios::binary);
+    student_t oldData[10];
+    input_file.read((char*)&oldData, sizeof(oldData));
+	         
+	student_t data[10]; 
+    for (int i = 0; i < 10; i++)
+    {
+		if(data[i].semester != 0){
+			
+			strcpy(data[i].name, oldData[i].name);
+		    strcpy(data[i].matric_id, oldData[i].matric_id);
+		    strcpy(data[i].password, oldData[i].password); //use matric no as default password 
+		    data[i].credit_hour = oldData[i].credit_hour;
+			data[i].semester = oldData[i].semester;
+	        
+		}else{
+			strcpy(data[i].name, name);
+		    strcpy(data[i].matric_id, matric_id);
+		    strcpy(data[i].password, matric_id); //use matric no as default password 
+		    data[i].credit_hour = 0;
+			data[i].semester = semester;
+			break;
+		}
+
+        
+    }
+    
+    ofstream output_file("new_students.data", ios::binary);
+    output_file.write((char*)&data, sizeof(data));
+    output_file.close();
+    
+    return backMainMessage();
+	
+	
+}
+
+bool viewAllStudent()
+{	
+	clearScreen();
+	cout << "       ---------------------------------------------------    \n";
+	cout << "       |                 VIEW ALL STUDENT                |    \n";
+	cout << "       ---------------------------------------------------    \n";
+	
+    ifstream input_file("new_students.data", ios::binary);
+    student_t data[10];
+    input_file.read((char*)&data, sizeof(data));
+	         
+
+    for (size_t i = 0; i < 10; i++)
+    {
+
+
+		if(data[i].semester != 0){
+			
+			cout << "Record #" << i << endl;
+	        cout << "Matric ID: " << data[i].matric_id << endl;
+	        cout << "Name: " << data[i].name << endl;
+	        cout << "Password: " << data[i].password << endl;
+	        cout << "Semester: " << data[i].semester << endl;
+	        cout << "Total Credit Hour: " << data[i].credit_hour << endl;
+	        cout << "-------------------------------------------" << endl;
+	        
+		}else{
+			cout << "End of Records. Total: " << i <<" record(s)" << endl;
+			break;
+		}
+
+        
+    }
+    
+	string action;
+	cout << "\nPress any key to back main menu....";
+	cin >> action;
+	return true;
+		
+}
+
+	
+//ADMIN FUNCTION END
+int main()
+{
    clearScreen();
-   bool loginResult;
+   string loginResult;
    int attempt = 0;
    do{
         
@@ -268,7 +386,9 @@ int main() {
 		
         loginResult = login();
 
-   }while(loginResult == 0);
+   }while(loginResult == "false");
+   
+   username = loginResult;
 
 	bool backMain = true;
     do{
@@ -293,6 +413,12 @@ int main() {
 	    		break;
 	    	case 6 :
 	    		searchSubject();
+	    		break;
+	    	case 7:
+	    		adminAddStudent();
+	    		break;
+	    	case 8 :
+	    		viewAllStudent();
 	    		break;
 		}
 	}while(backMain == true);
