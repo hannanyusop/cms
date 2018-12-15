@@ -2,9 +2,23 @@
 #include<string>
 #include<stdlib.h>
 #include<fstream>
+#include <string.h>
+
 
 using namespace std;
 
+//declare gloabal var
+int max_subject = 100;
+string subjectFile = "data/subjects.data";
+
+typedef struct subject
+{
+    char code[10] = "null";
+    char name[100] = "null";
+    int credit_hour = 0;
+    int semester = 0;
+    int capacity = 0;
+}subject_t;
 
 void logo()
 {
@@ -19,6 +33,19 @@ void clearScreen()
 {
 	system("CLS");
     logo();
+}
+
+bool backMainMessage()
+{
+	char action;
+	cout << "Press Y/y to back main manu or press any key to exit:";
+	cin >> action;
+	
+	if(action == 'y' || action == 'Y'){
+		return true;
+	}
+	
+	return false;
 }
 
 bool login()
@@ -143,6 +170,85 @@ void searchSubject()
 	
 }
 
+bool addSubject()
+{
+	clearScreen();
+	cout << "       ---------------------------------------------------    \n";
+	cout << "       |                    ADD SUBJECT                  |    \n";
+	cout << "       ---------------------------------------------------    \n";
+	
+	subject_t data[10];  
+	
+    strcpy(data[0].code, "DUA1002");
+    strcpy(data[0].name, "Pengajian AM");
+    data[0].credit_hour = 2;
+	data[0].semester = 1;
+	data[0].capacity = 30;
+	
+	strcpy(data[1].code, "DUE1202");
+    strcpy(data[1].name, "Communicative English");
+    data[1].credit_hour = 2;
+	data[1].semester = 1;
+	data[1].capacity = 30;
+	
+	strcpy(data[2].code, "NET1103");
+    strcpy(data[2].name, "Operating System");
+    data[2].credit_hour = 3;
+	data[2].semester = 1;
+	data[2].capacity = 30;
+	
+    // Serializing struct to student.data
+    ofstream output_file("subjects.data", ios::binary);
+    output_file.write((char*)&data, sizeof(data));
+    output_file.close();
+    
+    return backMainMessage();
+	
+}
+
+bool viewAllSubject()
+{
+	
+	clearScreen();
+	cout << "       ---------------------------------------------------    \n";
+	cout << "       |                 VIEW ALL SUBJECT                |    \n";
+	cout << "       ---------------------------------------------------    \n";
+	
+	// Reading from it
+    ifstream input_file("subjects.data", ios::binary);
+    subject_t data[10];
+    input_file.read((char*)&data, sizeof(data));
+	         
+
+    for (size_t i = 0; i < 10; i++)
+    {
+
+
+		if(data[i].credit_hour != 0){
+			
+			cout << "Record #" << i << endl;
+	        cout << "Code: " << data[i].code << endl;
+	        cout << "Name: " << data[i].name << endl;
+	        cout << "Credit Hour: " << data[i].credit_hour << endl;
+	        cout << "Semester: " << data[i].semester << endl;
+	        cout << "Capacity: " << data[i].capacity << endl;
+	        cout << "-------------------------------------------" << endl;
+	        
+		}else{
+			cout << "End of Records. Total: " << i <<" record(s)" << endl;
+			break;
+		}
+
+        
+    }
+    
+	string action;
+	cout << "\nPress any key to back main menu....";
+	cin >> action;
+	return true;
+		
+}
+
 int main() {
    clearScreen();
    bool loginResult;
@@ -163,28 +269,32 @@ int main() {
 
    }while(loginResult == 0);
 
-    //logged in
-    clearScreen();
-    int selected = displayMenu();
-    
-    clearScreen();
-    switch(selected){
-    	case 1 :
-    		break;
-    		
-    	case 2 :
-    		break;
-    		
-    	case 3 :
-    		break;
-    	case 4 :
-    		break;
-    	case 5 :
-    		break;
-    	case 6 :
-    		searchSubject();
-    		break;
-	}
+	bool backMain = true;
+    do{
+    	//logged in
+	    clearScreen();
+	    int selected = displayMenu();
+	    
+	    clearScreen();
+	    switch(selected){
+	    	case 1 :
+	    		backMain = addSubject();
+	    		break;
+	    	case 2 :
+	    		break;
+	    		
+	    	case 3 :
+	    		break;
+	    	case 4 :
+	    		break;
+	    	case 5 :
+	    		backMain = viewAllSubject();
+	    		break;
+	    	case 6 :
+	    		searchSubject();
+	    		break;
+		}
+	}while(backMain == true);
     
 
    return 0;
