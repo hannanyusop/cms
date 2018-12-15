@@ -126,7 +126,7 @@ void searchSubject()
 	char again = 'y';
     		
 	do{
-		
+		bool result = false;
 		clearScreen();
 		cout << "       ---------------------------------------------------    \n";
 		cout << "       |             SEARCH SUBJECT ID                   |    \n";
@@ -136,35 +136,37 @@ void searchSubject()
 	cout << "Insert Subject ID:";
 	cin >> code;
 	
-	string parameter = "["+code+"]";
-	string line;
-	bool result = false;
-	
-	  ifstream subject ("data/subjects.txt");
-	  subject.is_open();
-	    size_t pos;
-		while(subject.good())
-		{
-		      getline(subject,line);
-		      pos=line.find(parameter); 
-		      if(pos!=string::npos) 
-		        {
-		            cout << "Found:"+line;
-		            result = true;
-		            break;
-		        }
-		}
-		  
-		if(result == false){
-			cout << "\n\nSorry! No Code found for:"+code+"\n";
+		// Reading from it
+    ifstream input_file("subjects.data", ios::binary);
+    subject_t data[10];
+    input_file.read((char*)&data, sizeof(data));
+	         
+
+    for (size_t i = 0; i < 10; i++)
+    {
+		if(data[i].credit_hour != 0){
+			
+			if(data[i].code == code){
+				cout << "Record Found! "<<endl;
+				cout << "Record #" << i << endl;
+		        cout << "Code: " << data[i].code << endl;
+		        cout << "Name: " << data[i].name << endl;
+		        cout << "Credit Hour: " << data[i].credit_hour << endl;
+		        cout << "Semester: " << data[i].semester << endl;
+		        cout << "Capacity: " << data[i].capacity << endl;
+		        cout << "-------------------------------------------" << endl;
+		        
+		        result = true;
+			}
 		}
 		
-	    subject.close();	  
-	  
+    }	
+
+		if(result == false){
+			cout << "Sorry! No code match! (" << code << ")" <<endl; 
+		}  
 	  	cout << "\n\nDo you want to search another code?\nclick Y for yes or enter any key to stop\n";
 	  	cin >> again;
-	  	
-	  
 	  
 	}while(again == 'y' || again == 'Y');
 	
@@ -214,7 +216,6 @@ bool viewAllSubject()
 	cout << "       |                 VIEW ALL SUBJECT                |    \n";
 	cout << "       ---------------------------------------------------    \n";
 	
-	// Reading from it
     ifstream input_file("subjects.data", ios::binary);
     subject_t data[10];
     input_file.read((char*)&data, sizeof(data));
