@@ -76,9 +76,9 @@ int displayMenu()
 	cout << "| 1 => Add Subject                                         |\n";
 	cout << "| 2 => Delete Subject                                      |\n";
 	cout << "| 3 => Submit Subject                                      |\n";
-	cout << "| 4 => View Reqistered Subject                             |\n";
-	cout << "| 5 => View All Subject                                    |\n";
-	cout << "| 6 => Search Subject ID                                   |\n";
+	cout << "| 4 => Delete Suject(Admin)                                |\n";
+	cout << "| 5 => View All Subject(Admin)                             |\n";
+	cout << "| 6 => Add Subject(Admin)                                  |\n";
 	cout << "| 7 => Add student(Admin)                                  |\n";
 	cout << "| 8 => View Student(Admin)                                 |\n";
 	cout << "| 9 => Search Student(Admin)                               |\n";
@@ -205,6 +205,53 @@ int main() {
 	    	case 3 :
 	    		break;
 	    	case 4 :
+	    		
+	    		system("cls");
+	        	another = 'Y';
+	        	char code[20];
+	        	FILE *ftt;
+	        	
+	        	while (another == 'Y'|| another == 'y')
+	          	{
+	          		bool deleted = false;
+	          		
+					cout << "\n Enter subject code to delete : ";
+					cin >> code;
+					
+					//ftt: temp file ft:current users file
+					
+					ftt = fopen("temp.dat", "wb");
+					
+					rewind(ft);
+					while (fread (&subject, subRecsize,1,ft) == 1)
+
+	                if (strcmp(subject.code,code) != 0){
+	                    fwrite(&subject,subRecsize,1,ftt);
+	                }else{
+	                	//subject found!
+	                	deleted = true;
+					}
+	                
+	                
+	                if(deleted == true){
+	                	
+	        			fclose(ft);fclose(ftt);
+		                remove("subjects.txt");
+		                rename("temp.dat","subjects.txt");
+						ft = fopen("subjects.txt","rb+");
+						cout <<endl << "Successfully deleted the subject" <<endl;
+
+					}else{
+						
+						cout << "No subject found!" <<endl;
+						fclose(ftt); remove("temp.dat");
+					}
+	                
+					
+					cout << "\n Delete another subject?(Y/N) ";
+					fflush(stdin);
+					another = getchar();
+	            }
 	    		break;
 	    	case 5 :
 	    		
