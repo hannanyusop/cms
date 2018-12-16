@@ -25,6 +25,15 @@ struct student
 	char course[100];
 	int section;
 }e;
+
+struct subjects
+{
+	char name[100];
+	char code[100];
+	int credit_hour;
+	int semester;
+	int capacity;
+}subject;
 	
 void logo()
 {
@@ -112,12 +121,15 @@ string login()
     cout << "==============================================================\n";
     
     bool auth = false;
-    long int recsize;
+    long int recsize, subRecsize;
 
     fp=fopen("students.txt","rb+");
+    ft=fopen("subjects.txt","rb+");
 	//create file if not exist
     if (fp == NULL) {fp = fopen("students.txt","wb+");}
+    if (ft == NULL) {ft = fopen("subjects.txt","wb+");}
  	recsize = sizeof(e);
+ 	subRecsize = sizeof(subject);
  	
 	
 	rewind(fp);
@@ -143,20 +155,23 @@ string login()
 }
 
 int main() {
-    FILE *fp, *ft;
+
     char another, choice;
     bool backMain = true;
 
     char xfirst_name[50], xlast_name[50];
-    long int recsize;
+    long int recsize, subRecsize;
 
     fp=fopen("students.txt","rb+");
+    ft=fopen("subjects.txt","rb+");
+    
 
  	recsize = sizeof(e);
- 	
+ 	subRecsize = sizeof(subject);
  	
 	string loginResult;
 	int attempt = 0;
+	
 	do{
         
         if(attempt == 0){
@@ -192,8 +207,41 @@ int main() {
 	    	case 4 :
 	    		break;
 	    	case 5 :
+	    		
+	    		rewind(ft);
+				cout << "==== View All Subject ==== " << endl;
+				while (fread(&subject,subRecsize,1,ft) == 1){
+					
+					cout << "Name                 : "<< subject.name << endl;
+					cout << "Code                 : "<< subject.code<< endl;
+					cout << "Credit Hour          : "<< subject.credit_hour<< endl;
+	                cout << "Semeseter            : "<< subject.semester<< endl;
+	                cout << "Capacity             : "<< subject.capacity<< endl;
+					cout << "------------------------------------------------------" <<endl;
+				}
+				cout << "\n\n";
+				system("pause");
+	           
 	    		break;
 	    	case 6 :
+	    		fseek(ft,0,SEEK_END);
+	            another ='Y';
+	            
+	            while(another == 'Y' || another == 'y')
+	            {
+	                system("cls");
+	                cout << "==== Add Sbuject ==== " << endl ;
+	                cout << "Name                 : ";cin >> subject.name;
+					cout << "Code                 : ";cin >> subject.code;
+					cout << "Credit Hour          : ";cin >> subject.credit_hour;
+	                cout << "Semeseter            : ";cin >> subject.semester;
+	                cout << "Capacity             : ";cin >> subject.capacity;
+	                	                
+	                fwrite(&subject,subRecsize,1,ft);
+	                cout << "\n Add Another Record (Y/N) ";
+	                fflush(stdin);
+	                another = getchar();
+	            }
 	    		break;
 	    	case 7:
 	    		
@@ -202,7 +250,7 @@ int main() {
 	            while(another == 'Y' || another == 'y')
 	            {
 	                system("cls");
-	                cout << "==== View All Student ==== " << endl ;
+	                cout << "==== Add Student ==== " << endl ;
 	                cout << "Enter the First Name : ";cin >> e.first_name;
 					cout << "Enter the Last Name  : ";cin >> e.last_name;
 					cout << "Enter Matric No      : ";cin >> e.matric_id;
@@ -278,6 +326,7 @@ int main() {
 					another = getchar();
 				}
 		    	break;
+		    	
 		}
 	}while(backMain == true);
 
