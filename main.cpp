@@ -12,8 +12,17 @@ using namespace std;
 
 //declare gloabal var
 static string username = "null", s_role = "none", s_name = "null", s_course = "null", s_section = "null";
+static bool result = false;
 static int s_semester = 0, s_credit_hour = 0;
-FILE *fp, *ft;
+FILE *fp, *ft, *fshs;
+
+
+struct student_has_subject
+{
+	string matric_id;
+	string subject_code; 
+}s_has_sub;
+
 
 struct student
 {
@@ -123,15 +132,18 @@ string login()
     cout << "==============================================================\n";
     
     bool auth = false;
-    long int recsize, subRecsize;
+    long int recsize, subRecsize, shsRec;
 
-    fp=fopen("students.txt","rb+");
-    ft=fopen("subjects.txt","rb+");
+    fp = fopen("students.txt","rb+");
+    ft = fopen("subjects.txt","rb+");
+    fshs = fopen("student_has_subject.txt","rb+");
 	//create file if not exist
     if (fp == NULL) {fp = fopen("students.txt","wb+");}
     if (ft == NULL) {ft = fopen("subjects.txt","wb+");}
+    if (fshs == NULL) {fshs = fopen("student_has_subject.txt","wb+");}
  	recsize = sizeof(e);
  	subRecsize = sizeof(subject);
+ 	shsRec = sizeof(s_has_sub);
  	
 	
 	rewind(fp);
@@ -163,20 +175,57 @@ string login()
 
 }
 
+
+//user functions
+int userMainMenu()
+{
+	cout << "\n############################################################\n";
+	cout << "#                       WELOCOME TO UTM CMS                #\n";
+	cout << "#                use number(1-6) to make selection         #\n";
+	cout << "############################################################\n";
+	cout << "| 1 => Register Subject                                    |\n";
+	cout << "| 2 => View Registered Subject                             |\n";
+	cout << "| 3 => Remove Registered Suject                            |\n";
+	cout << "| 4 => Search Subject                                      |\n";
+	cout << "| 5 => Update Password                                     |\n";
+	cout << "|==========================================================|\n";
+	cout << "| Q => Quit                                                |\n";
+	cout << "|==========================================================|\n";
+	
+	bool result = false; int num;
+	do{
+		cout<< "Select Menu(1-6):";
+		cin >> num;
+		
+		if(num > 0 && num < 6){
+			
+			result = true;
+		}else{
+			cout << "invalid input! Please insert range 1-6.\n\n";
+		}
+		
+	}while(result == false);
+	
+	return num;
+}
+
+//end user functions
 int main() {
 
     char another, choice;
     bool backMain = true;
 
     char xfirst_name[50], xlast_name[50];
-    long int recsize, subRecsize;
+    long int recsize, subRecsize, shsRec;
 
     fp=fopen("students.txt","rb+");
     ft=fopen("subjects.txt","rb+");
+    fshs = fopen("student_has_subject.txt","rb+");
     
 
  	recsize = sizeof(e);
  	subRecsize = sizeof(subject);
+ 	shsRec = sizeof(s_has_sub);
  	
 	string loginResult;
 	int attempt = 0;
@@ -212,13 +261,85 @@ int main() {
    
    
    if(s_role == "user"){
-   	//access student
+   	// student
+   	
+	
+	do{
+		clearScreen();
+		int selected = userMainMenu();
+		
+		switch(selected){
+			case 1 :
+				
+				rewind(ft);
+				
+				cout << "==== View All Subject For Semester " <<s_semester << "==== " << endl;
+				while (fread(&subject,subRecsize,1,ft) == 1){
+					
+					if(subject.semester == s_semester){
+						cout << "Subject              : "<< subject.code << " "<< subject.name << endl;
+						cout << "Credit Hour          : "<< subject.credit_hour<< endl;
+		                cout << "Semeseter            : "<< subject.semester<< endl;
+		                cout << "Left                 : "<< subject.capacity<< endl;
+						cout << "------------------------------------------------------" <<endl;
+					}
+				}
+				result = false;
+				
+				do{
+					string code; 
+					
+					cout << "Insert subject code:"; cin>>code;
+					
+					//checking
+					rewind(ft);
+					while (fread(&subject,subRecsize,1,ft) == 1){
+					
+						if(subject.semester == s_semester && subject.code == code){
+							
+								fseek(fshs,0,SEEK_END);
+				                s_has_sub.matric_id = username;
+					            s_has_sub.subject_code = subject.code;
+				                	                
+				                fwrite(&s_has_sub,shsRec,1,fshs);
+		                
+								result = true;
+								cout << "Successfully Registered!" << endl;
+								break;	
+						}
+						
+					}
+					
+					if(result == false){
+						cout << "Invalid Selection!" <<endl << endl;
+					}
+					
+				}while(result == false);
+				
+				system("pause");
+				break;
+				
+				case 2 :
+					
+					rewind(fshs);
+					cout << "==== View Registered Subject ======" << endl;
+					while (fread(&s_has_sub,shsRec,1,fshs) == 1){
+							cout << "CODE              : "<< s_has_sub.subject_code <<endl;
+					}
+					cout << "====================================" << endl;
+					system("pause");
+					break;
+				
+		}
+	
+	
+	}while(backMain == true);
    	
    	cout << "You're student" << endl;
    	
    }else if(s_role == "admin"){
    	
-   	//admin access
+   	//access
    	
 	   	do{
 	    	//logged in
