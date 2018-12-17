@@ -84,15 +84,14 @@ int displayMenu()
 	cout << "#                       WELOCOME TO UTM CMS                #\n";
 	cout << "#                use number(1-6) to make selection         #\n";
 	cout << "############################################################\n";
-	cout << "| 1 => Add Subject                                         |\n";
-	cout << "| 2 => Delete Subject                                      |\n";
-	cout << "| 3 => Submit Subject                                      |\n";
-	cout << "| 4 => Delete Suject(Admin)                                |\n";
-	cout << "| 5 => View All Subject(Admin)                             |\n";
-	cout << "| 6 => Add Subject(Admin)                                  |\n";
-	cout << "| 7 => Add student(Admin)                                  |\n";
-	cout << "| 8 => View Student(Admin)                                 |\n";
-	cout << "| 9 => Search Student(Admin)                               |\n";
+	cout << "|  >> USERS <<                                             |\n";
+    cout << "| 1 => View                                                |\n";
+	cout << "| 2 => Add                                                 |\n";
+    cout << "| 3 => Search                                              |\n";
+    cout << "|  >> SUBJECT <<                                           |\n";
+    cout << "| 4 => View                                                |\n";
+	cout << "| 5 => Add                                                 |\n";
+	cout << "| 6 => Delete                                              |\n";
 	cout << "|==========================================================|\n";
 	cout << "| Q => Quit                                                |\n";
 	cout << "|==========================================================|\n";
@@ -439,22 +438,154 @@ int main() {
 
 		    clearScreen();
 		    switch(selected){
+
 		    	case 1 :
+		    	     clearScreen();
+		    	    rewind(fp);
+		    	    cout << "------------------------------------" << endl;
+					cout << "==== MAIN > USERS > ALL ==== " << endl ;
+					cout << "------------------------------------" << endl << endl;
+					while (fread(&e,recsize,1,fp) == 1){
+
+						cout << "Name       : " <<e.first_name <<" "<<e.last_name <<endl;
+						cout << "Matrix No  : " <<e.matric_id <<endl;
+						cout << "Course     : " <<e.course <<endl;
+						cout << "Section    : " <<e.section <<endl;
+						cout << "Semester   : " << e.semester <<endl;
+						cout << "Credit Hour: " <<e.credit_hour <<endl;
+						cout << "Role       : " <<e.role <<endl;
+						cout << "------------------------------------------------------" <<endl;
+					}
+					cout << "\n\n";
+					system("pause");
 		    		break;
 		    	case 2 :
-		    		break;
 
+		    	    fseek(fp,0,SEEK_END);
+		            another ='Y';
+		            while(another == 'Y' || another == 'y')
+		            {
+                        clearScreen();
+                        cout << "------------------------------------" << endl;
+		                cout << "==== MAIN > USERS > ADD ==== " << endl ;
+		                cout << "------------------------------------" << endl << endl;
+
+		                cout << "Enter the First Name : ";cin >> e.first_name;
+						cout << "Enter the Last Name  : ";cin >> e.last_name;
+						cout << "Enter Matric No      : ";cin >> e.matric_id;
+		                cout << "Enter the Course     : ";cin >> e.course;
+		                cout << "Enter the Section    : ";cin >> e.section;
+		                cout << "Role(admin/user)     : ";cin >> e.role;
+
+		                e.semester  = 1;
+		                e.credit_hour = 0;
+		                strcpy(e.password, e.matric_id);
+
+		                fwrite(&e,recsize,1,fp);
+		                cout << "\n Add Another Record (Y/N) ";
+		                fflush(stdin);
+		                another = getchar();
+		            }
+
+		    		break;
 		    	case 3 :
+					another = 'Y';
+                    result = false;
+
+					while (another == 'Y'|| another == 'y')
+					{
+                        clearScreen();
+                        cout << "------------------------------------" << endl;
+                        cout << "==== MAIN > USERS > SEARCH ==== " << endl ;
+                        cout << "------------------------------------" << endl << endl;
+
+						cout << "\n Enter the last name of the student : ";
+						cin >> xlast_name;
+
+						rewind(fp);
+						while (fread(&e,recsize,1,fp) == 1)
+						{
+							if (strcmp(e.last_name,xlast_name) == 0){
+
+								cout << endl <<"Found!" <<endl;
+								cout << "Name       : " <<e.first_name <<" "<<e.last_name <<endl;
+								cout << "Matric No  : " <<e.matric_id <<endl;
+								cout << "Course     : " <<e.course <<endl;
+								cout << "Section    : " <<e.section <<endl;
+								cout << "Semester   : " << e.semester <<endl;
+								cout << "Credit Hour: " <<e.credit_hour <<endl;
+								fseek(fp, - recsize, SEEK_CUR);
+								fwrite(&e,recsize,1,fp);
+								result = true;
+								break;
+
+							}
+						}
+
+						if(result == false){
+							cout << "Student Record not found" <<endl;
+						}
+						cout << "Search Another Student? (Y/N) ";
+						fflush(stdin);
+						another = getchar();
+					}
 		    		break;
 		    	case 4 :
 
-		    		system("cls");
+                    clearScreen();
+		    		rewind(ft);
+		    		cout << "------------------------------------" << endl;
+					cout << "==== MAIN > SUBJECT > ALL ==== " << endl ;
+					cout << "------------------------------------" << endl << endl;
+					while (fread(&subject,subRecsize,1,ft) == 1){
+
+						cout << "Name                 : "<< subject.name << endl;
+						cout << "Code                 : "<< subject.code<< endl;
+						cout << "Credit Hour          : "<< subject.credit_hour<< endl;
+		                cout << "Semeseter            : "<< subject.semester<< endl;
+		                cout << "Capacity             : "<< subject.capacity<< endl;
+						cout << "------------------------------------------------------" <<endl;
+					}
+					cout << "\n\n";
+					system("pause");
+
+		    		break;
+		    	case 5 :
+
+		    		fseek(ft,0,SEEK_END);
+		            another ='Y';
+
+		            while(another == 'Y' || another == 'y')
+		            {
+                        clearScreen();
+                        cout << "------------------------------------" << endl;
+                        cout << "==== MAIN > SUBJECT > ADD ==== " << endl ;
+                        cout << "------------------------------------" << endl << endl;
+
+		                cout << "Name                 : ";cin >> subject.name;
+						cout << "Code                 : ";cin >> subject.code;
+						cout << "Credit Hour          : ";cin >> subject.credit_hour;
+		                cout << "Semeseter            : ";cin >> subject.semester;
+		                cout << "Capacity             : ";cin >> subject.capacity;
+
+		                fwrite(&subject,subRecsize,1,ft);
+		                cout << "\n Add Another Record (Y/N) ";
+		                fflush(stdin);
+		                another = getchar();
+		            }
+		    		break;
+
+		    	case 6:
 		        	another = 'Y';
 		        	char code[20];
 		        	FILE *ftt;
 
 		        	while (another == 'Y'|| another == 'y')
 		          	{
+                        clearScreen();
+                        cout << "------------------------------------" << endl;
+                        cout << "==== MAIN > SUBJECT > DELETE ==== " << endl ;
+                        cout << "------------------------------------" << endl << endl;
 		          		bool deleted = false;
 
 						cout << "\n Enter subject code to delete : ";
@@ -495,128 +626,6 @@ int main() {
 						another = getchar();
 		            }
 		    		break;
-		    	case 5 :
-
-		    		rewind(ft);
-					cout << "==== View All Subject ==== " << endl;
-					while (fread(&subject,subRecsize,1,ft) == 1){
-
-						cout << "Name                 : "<< subject.name << endl;
-						cout << "Code                 : "<< subject.code<< endl;
-						cout << "Credit Hour          : "<< subject.credit_hour<< endl;
-		                cout << "Semeseter            : "<< subject.semester<< endl;
-		                cout << "Capacity             : "<< subject.capacity<< endl;
-						cout << "------------------------------------------------------" <<endl;
-					}
-					cout << "\n\n";
-					system("pause");
-
-		    		break;
-		    	case 6 :
-		    		fseek(ft,0,SEEK_END);
-		            another ='Y';
-
-		            while(another == 'Y' || another == 'y')
-		            {
-		                system("cls");
-		                cout << "==== Add Sbuject ==== " << endl ;
-		                cout << "Name                 : ";cin >> subject.name;
-						cout << "Code                 : ";cin >> subject.code;
-						cout << "Credit Hour          : ";cin >> subject.credit_hour;
-		                cout << "Semeseter            : ";cin >> subject.semester;
-		                cout << "Capacity             : ";cin >> subject.capacity;
-
-		                fwrite(&subject,subRecsize,1,ft);
-		                cout << "\n Add Another Record (Y/N) ";
-		                fflush(stdin);
-		                another = getchar();
-		            }
-		    		break;
-		    	case 7:
-
-		    		fseek(fp,0,SEEK_END);
-		            another ='Y';
-		            while(another == 'Y' || another == 'y')
-		            {
-		                system("cls");
-		                cout << "==== Add Student ==== " << endl ;
-		                cout << "Enter the First Name : ";cin >> e.first_name;
-						cout << "Enter the Last Name  : ";cin >> e.last_name;
-						cout << "Enter Matric No      : ";cin >> e.matric_id;
-		                cout << "Enter the Course     : ";cin >> e.course;
-		                cout << "Enter the Section    : ";cin >> e.section;
-		                cout << "Role(admin/user)     : ";cin >> e.role;
-
-		                e.semester  = 1;
-		                e.credit_hour = 0;
-		                strcpy(e.password, e.matric_id);
-
-		                fwrite(&e,recsize,1,fp);
-		                cout << "\n Add Another Record (Y/N) ";
-		                fflush(stdin);
-		                another = getchar();
-		            }
-
-		    		break;
-		    	case 8 :
-
-					rewind(fp);
-					cout << "==== View All Student ==== " << endl;
-					while (fread(&e,recsize,1,fp) == 1){
-
-						cout << "Name       : " <<e.first_name <<" "<<e.last_name <<endl;
-						cout << "Matric No  : " <<e.matric_id <<endl;
-						cout << "Course     : " <<e.course <<endl;
-						cout << "Section    : " <<e.section <<endl;
-						cout << "Semester   : " << e.semester <<endl;
-						cout << "Credit Hour: " <<e.credit_hour <<endl;
-						cout << "Role       : " <<e.role <<endl;
-						cout << "------------------------------------------------------" <<endl;
-					}
-					cout << "\n\n";
-					system("pause");
-
-			    	break;
-
-			    case 9 :
-
-			    	system("cls");
-					another = 'Y';
-					bool result = false;
-
-					while (another == 'Y'|| another == 'y')
-					{
-						cout << "\n Enter the last name of the student : ";
-						cin >> xlast_name;
-
-						rewind(fp);
-						while (fread(&e,recsize,1,fp) == 1)
-						{
-							if (strcmp(e.last_name,xlast_name) == 0){
-
-								cout << endl <<"Found!" <<endl;
-								cout << "Name       : " <<e.first_name <<" "<<e.last_name <<endl;
-								cout << "Matric No  : " <<e.matric_id <<endl;
-								cout << "Course     : " <<e.course <<endl;
-								cout << "Section    : " <<e.section <<endl;
-								cout << "Semester   : " << e.semester <<endl;
-								cout << "Credit Hour: " <<e.credit_hour <<endl;
-								fseek(fp, - recsize, SEEK_CUR);
-								fwrite(&e,recsize,1,fp);
-								result = true;
-								break;
-
-							}
-						}
-
-						if(result == false){
-							cout << "Student Record not found" <<endl;
-						}
-						cout << "Search Another Student? (Y/N) ";
-						fflush(stdin);
-						another = getchar();
-					}
-			    	break;
 
 			}
 		}while(backMain == true);
