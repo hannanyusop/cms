@@ -141,6 +141,7 @@ string login()
     if (fp == NULL) {fp = fopen("students.txt","wb+");}
     if (ft == NULL) {ft = fopen("subjects.txt","wb+");}
     if (fshs == NULL) {fshs = fopen("student_has_subject.txt","wb+");}
+    
  	recsize = sizeof(e);
  	subRecsize = sizeof(subject);
  	shsRec = sizeof(s_has_sub);
@@ -230,16 +231,16 @@ int main() {
 	string loginResult;
 	int attempt = 0;
 	
-	bool testing = true;
-	
-	if(testing == true){
-		username = "test";
-		fp=fopen("students.txt","rb+");
-	    ft=fopen("subjects.txt","rb+");
-		//create file if not exist
-	    if (fp == NULL) {fp = fopen("students.txt","wb+");}
-	    if (ft == NULL) {ft = fopen("subjects.txt","wb+");}
-	}
+//	bool testing = true;
+//	
+//	if(testing == true){
+//		username = "test";
+//		fp=fopen("students.txt","rb+");
+//	    ft=fopen("subjects.txt","rb+");
+//		//create file if not exist
+//	    if (fp == NULL) {fp = fopen("students.txt","wb+");}
+//	    if (ft == NULL) {ft = fopen("subjects.txt","wb+");}
+//	}
 	
 	do{
         
@@ -302,7 +303,8 @@ int main() {
 					            s_has_sub.subject_code = subject.code;
 				                	                
 				                fwrite(&s_has_sub,shsRec,1,fshs);
-		                
+				                fflush(stdin);
+				                
 								result = true;
 								cout << "Successfully Registered!" << endl;
 								break;	
@@ -324,7 +326,11 @@ int main() {
 					rewind(fshs);
 					cout << "==== View Registered Subject ======" << endl;
 					while (fread(&s_has_sub,shsRec,1,fshs) == 1){
+						
+						if(s_has_sub.matric_id == username){
 							cout << "CODE              : "<< s_has_sub.subject_code <<endl;
+						}
+							
 					}
 					cout << "====================================" << endl;
 					system("pause");
