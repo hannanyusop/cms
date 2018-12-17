@@ -11,7 +11,7 @@
 using namespace std;
 
 //declare gloabal var
-static string username = "null", s_role = "none", s_name = "null", s_course = "null", s_section = "null";
+static string username = "null", s_role = "none", s_name = "null", s_course = "null", s_section = "null", strInput;
 static bool result = false;
 static int s_semester = 0, s_credit_hour = 0;
 FILE *fp, *ft, *fshs;
@@ -373,9 +373,54 @@ int main() {
 					}
                     break;
                 case 4 :
+
+                    clearScreen();
+		        	another = 'Y';
+		        	char code[20];
+		        	FILE *ftt;
+
+		        	while (another == 'Y'|| another == 'y')
+		          	{
+		          		bool deleted = false;
+		          		clearScreen();
+                        cout << "======== Search Subject  ======== " << endl;
+
+						cout << "\n Enter subject code to delete : ";
+						cin >> getInput;
+
+						//ftt: temp file ft:current users file
+
+						ftt = fopen("temp.dat", "wb+");
+
+						rewind(fshs);
+						while (fread (&s_has_sub, shsRec,1,fshs) == 1)
+
+		                if (s_has_sub.matric_id == username && s_has_sub.subject_code == getInput){
+                            //subject found!
+		                	deleted = true;
+		                }else{
+		                	 fwrite(&s_has_sub,shsRec,1,ftt);
+						}
+
+		                if(deleted == true){
+
+		        			fclose(fshs);fclose(ftt);
+			                remove("student_has_subject.txt");
+			                rename("temp.dat","student_has_subject.txt");
+							fshs = fopen("student_has_subject.txt","rb+");
+							cout <<endl << "Successfully deleted the subject" <<endl;
+
+						}else{
+
+							cout << "No subject found!" <<endl;
+							fclose(ftt); remove("temp.dat");
+						}
+
+						cout << "\n Delete another subject?(Y/N) ";
+						fflush(stdin);
+						another = getchar();
+		            }
                     break;
-
-
 		}
 
 
